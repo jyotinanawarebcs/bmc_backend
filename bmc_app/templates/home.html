@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Booth Votes Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    table { border-collapse: collapse; width: 60%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    th { background-color: #007bff; color: white; }
+  </style>
+</head>
+<body>
+  <h2>Booth-wise Votes</h2>
+  <p><b>Candidate:</b> <span id="candidateName"></span></p>
+  <p><b>Ward:</b> <span id="wardNo"></span></p>
+  <p><b>Total Votes:</b> <span id="totalVotes"></span></p>
+
+  <table id="boothTable">
+    <thead>
+      <tr>
+        <th>Booth</th>
+        <th>Votes</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function fetchBoothData(resultId = 1) {
+      try {
+        const response = await fetch(`/api/results/${resultId}/booths/`);
+        const data = await response.json();
+
+        document.getElementById("candidateName").textContent = data.candidate;
+        document.getElementById("wardNo").textContent = data.ward;
+        document.getElementById("totalVotes").textContent = data.total_votes;
+
+        const tbody = document.querySelector("#boothTable tbody");
+        tbody.innerHTML = "";
+
+        for (const [booth, votes] of Object.entries(data.booth_data)) {
+          tbody.innerHTML += `<tr><td>${booth}</td><td>${votes}</td></tr>`;
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    }
+
+    // Fetch data for result ID = 1
+    fetchBoothData();
+  </script>
+</body>
+</html>
